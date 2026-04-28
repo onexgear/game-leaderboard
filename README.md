@@ -44,6 +44,8 @@ docker-compose down -v
 
 ## Unity 前端設定
 
+![排行榜介面](docs/screenshot.png)
+
 **前置需求：** Unity 6（6000.x），已匯入 TextMeshPro Essential Resources
 
 ### 1. 開啟專案
