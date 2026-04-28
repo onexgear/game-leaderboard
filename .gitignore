@@ -1,0 +1,34 @@
+# ── Go ────────────────────────────────────────────────────────────────────────
+leaderboard
+leaderboard.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# ── Unity ─────────────────────────────────────────────────────────────────────
+client/[Ll]ibrary/
+client/[Tt]emp/
+client/[Oo]bj/
+client/[Bb]uild/
+client/[Bb]uilds/
+client/[Ll]ogs/
+client/[Uu]ser[Ss]ettings/
+client/.vs/
+client/**/*.pidb
+client/**/*.suo
+client/**/*.user
+client/**/*.userprefs
+client/**/*.sln
+client/**/*.csproj
+client/**/*.unityproj
+
+# Windows font — cannot redistribute (copy from C:\Windows\Fonts\msjh.ttc)
+client/Assets/Fonts/msjh.ttc
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
