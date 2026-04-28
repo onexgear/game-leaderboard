@@ -1,6 +1,10 @@
 # Game Leaderboard
 
 即時遊戲排行榜 Demo：Go + Redis 後端 + Unity3D 前端。
+- Redis ZSET 實作即時排名
+- 即時查詢榜單與個人排名
+- unity3d模擬遊戲對戰後分數更新流程
+
 
 ```
 game-leaderboard/         ← 此 repo 根目錄
