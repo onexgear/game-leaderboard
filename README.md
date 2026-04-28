@@ -1,17 +1,17 @@
 # Game Leaderboard
 
-A real-time game leaderboard demo: Go + Redis backend with a Unity3D frontend.
+即時遊戲排行榜 Demo：Go + Redis 後端 + Unity3D 前端。
 
 ```
-game-leaderboard/         ← this repo
+game-leaderboard/         ← 此 repo 根目錄
 ├── main.go               ┐
-├── handler/              │  Go + Gin HTTP server
+├── handler/              │  Go + Gin HTTP Server
 ├── service/              │
 ├── repository/           │
 ├── model/                ┘
 ├── Dockerfile
 ├── docker-compose.yml
-└── client/               ← Unity3D frontend (Unity 6)
+└── client/               ← Unity3D 前端（Unity 6）
     └── Assets/Scripts/
         ├── PlayerPanel.cs
         ├── OpponentPanel.cs
@@ -20,21 +20,21 @@ game-leaderboard/         ← this repo
 
 ---
 
-## Backend — Quick Start
+## 後端啟動
 
-**Prerequisites:** Docker Desktop
+**前置需求：** Docker Desktop
 
 ```bash
 docker-compose up --build
 ```
 
-This starts two containers:
-- **Redis 7** on port `6379`
-- **Go server** on port `8080`
+此指令會同時啟動：
+- **Redis 7**（port `6379`）
+- **Go Server**（port `8080`）
 
-The API will be available at `http://localhost:8080`.
+API 位址：`http://localhost:8080`
 
-To stop and remove all data:
+清除所有資料並停止：
 
 ```bash
 docker-compose down -v
@@ -42,64 +42,64 @@ docker-compose down -v
 
 ---
 
-## Frontend — Unity Client Setup
+## Unity 前端設定
 
-**Prerequisites:** Unity 6 (6000.x) with TextMeshPro Essential Resources imported
+**前置需求：** Unity 6（6000.x），已匯入 TextMeshPro Essential Resources
 
-### 1. Open the project
+### 1. 開啟專案
 
-Open `client/` as a Unity project.
+用 Unity Hub 開啟 `client/` 資料夾。
 
-### 2. Chinese font (one-time setup)
+### 2. 中文字型（首次設定）
 
-The UI uses Microsoft JhengHei for Chinese characters. This font ships with Windows but cannot be redistributed in the repo.
+UI 使用微軟正黑體顯示中文，此字型隨 Windows 附帶，無法放入 repo。
 
-Copy it manually:
+請手動複製：
 
 ```
 C:\Windows\Fonts\msjh.ttc  →  client/Assets/Fonts/msjh.ttc
 ```
 
-Then in the Unity Editor run **Tools → Build Leaderboard UI** to regenerate the UI.
+複製完成後，在 Unity Editor 執行 **Tools → Build Leaderboard UI** 重新建立 UI。
 
-### 3. Import TMP Essential Resources (if text appears blank)
+### 3. 文字顯示為空白時
 
-In Unity: **Window → TextMeshPro → Import TMP Essential Resources**
+Unity 選單：**Window → TextMeshPro → Import TMP Essential Resources**
 
-### 4. Start Play mode
+### 4. 開始執行
 
-Make sure `docker-compose up` is running first, then press **Play** in Unity.
+確認 `docker-compose up` 已在執行中，再按 Unity 的 **Play**。
 
 ---
 
-## Architecture
+## 架構
 
 ```
 Unity Client
-     │  HTTP (UnityWebRequest)
+     │  HTTP（UnityWebRequest）
      ▼
-Gin HTTP Server  (:8080)
+Gin HTTP Server（:8080）
      │
      ▼
 Redis Sorted Set
 ```
 
-### Why Redis Sorted Set?
+### 為什麼選 Redis Sorted Set？
 
-| Operation | Redis Command | Time Complexity |
+| 操作 | Redis 指令 | 時間複雜度 |
 |---|---|---|
-| Submit / update score | `ZADD GT` | O(log N) |
-| Get Top N | `ZREVRANGE` | O(log N + M) |
-| Get player rank | `ZREVRANK` | O(log N) |
-| Remove player | `ZREM` | O(log N) |
+| 提交 / 更新分數 | `ZADD GT` | O(log N) |
+| 取得前 N 名 | `ZREVRANGE` | O(log N + M) |
+| 查詢玩家排名 | `ZREVRANK` | O(log N) |
+| 移除玩家 | `ZREM` | O(log N) |
 
-`ZADD GT` ensures only the player's highest score is kept — no extra read-modify-write needed.
+`ZADD GT` 確保每位玩家只保留最高分，不需要額外的讀取再修改操作。
 
 ---
 
-## API Reference
+## API 說明
 
-### Submit Score
+### 提交分數
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/scores \
@@ -111,9 +111,9 @@ curl -X POST http://localhost:8080/api/v1/scores \
 {"message": "score submitted", "player_id": "alice", "score": 9500}
 ```
 
-> Only the highest score is retained. Submitting a lower score has no effect.
+> 只保留最高分，提交較低分數不會有任何效果。
 
-### Get Leaderboard (Top N)
+### 取得排行榜（前 N 名）
 
 ```bash
 curl "http://localhost:8080/api/v1/leaderboard?limit=5"
@@ -129,19 +129,19 @@ curl "http://localhost:8080/api/v1/leaderboard?limit=5"
 }
 ```
 
-### Get Player Rank
+### 查詢玩家排名
 
 ```bash
 curl http://localhost:8080/api/v1/players/alice/rank
 ```
 
-### Remove Player
+### 移除玩家
 
 ```bash
 curl -X DELETE http://localhost:8080/api/v1/players/alice
 ```
 
-### Health Check
+### 健康檢查
 
 ```bash
 curl http://localhost:8080/health
@@ -149,7 +149,7 @@ curl http://localhost:8080/health
 
 ---
 
-## Running Tests
+## 執行測試
 
 ```bash
 go test ./... -v
@@ -157,14 +157,14 @@ go test ./... -v
 
 ---
 
-## Scalability Discussion
+## 擴展性討論
 
-**Current design** handles tens of thousands of concurrent players on a single Redis instance.
+**目前設計**可在單一 Redis 實例上支援數萬名並發玩家。
 
-**To support millions of players:**
+**若要支援數百萬玩家：**
 
-1. **Redis Cluster** — shard the sorted set across nodes by score range or consistent hashing.
-2. **Read replicas** — route `ZREVRANGE` / `ZREVRANK` reads to replicas, writes to primary.
-3. **Top-N cache** — cache the Top 10/100 in memory (refreshed every few seconds) to cut Redis round-trips.
-4. **Pagination** — replace `limit` with cursor-based pagination for leaderboards beyond 1000 entries.
-5. **Horizontal app scaling** — the stateless Go service scales behind a load balancer; only Redis is stateful.
+1. **Redis Cluster** — 將 Sorted Set 依分數區間或一致性雜湊分片到多個節點。
+2. **Read Replica** — 讀取操作（`ZREVRANGE` / `ZREVRANK`）導向 replica，寫入導向 primary。
+3. **快取 Top-N** — 在記憶體中快取前 10/100 名（每幾秒刷新），減少 Redis 往返次數。
+4. **分頁** — 對超過 1000 筆的排行榜改用 cursor-based pagination。
+5. **水平擴展 App** — 無狀態的 Go Service 可在 Load Balancer 後方水平擴展，只有 Redis 是有狀態的。
